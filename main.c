@@ -1,67 +1,47 @@
 #include <stdio.h>
-#include <string.h>
 #include "main_lib.h"
 #include "client_stuff/client_lib.h"
 
-User users[30];
-int user_count = 0;
+int main(){
+    User users[30];
+    BookedTrip trips[50];
+    int users_count = 0, trips_count = 0;
 
-void View_Routes(Route routes[], int size);
-
-int main() {
     Route routes[] = {
         {"Kos", "KOS", 60, 80, 120, 100},
         {"Rodos", "RHO", 80, 100, 140, 100},
-        {"Kalymnos", "KAL", 60, 80, 120, 100}
-        // ... ypoloipa dromologia ...
+        {"Kalymnos", "KAL", 60, 80, 120, 100},
+        {"Patmos", "PAT", 55, 75, 115, 100},
+        {"Astypalaia", "AST", 50, 70, 110, 100},
+        {"Kasos", "KAS", 65, 85, 125, 100},
+        {"Kastelorizo", "KST", 100, 120, 160, 120},
+        {"Leros", "LER", 60, 80, 120, 100},
+        {"Karpathos", "KAR", 70, 90, 130, 100},
+        {"Symi", "SYM", 80, 100, 140, 120},
+        {"Xalki", "XAL", 70, 90, 130, 100},
+        {"Tilos", "TIL", 75, 95, 135, 100},
+        {"Pserimos", "PSE", 60, 80, 120, 100}
     };
 
-    int size = sizeof(routes) / sizeof(routes[0]);
-    View_Routes(routes, size);
+    int routes_count = 5;
+    char uname[30], pass[30];
+    int index;
 
-    create_new_clients(users, &user_count);
+    Create_new_client(users, &users_count);
 
-    if (user_count > 0) {
-        book_trip(users[user_count - 1].university_student);
+    printf("Username: ");
+    scanf("%s", uname);
+    printf("Password: ");
+    scanf("%s", pass);
+
+    index = check_login(users, users_count, uname, pass);
+
+    if (index == -1){
+        printf("Lathos stoixeia\n");
+    }
+    else{
+        client_login(&users[index], routes, routes_count,trips, &trips_count);
     }
 
     return 0;
 }
-
-void View_Routes(Route routes[], int size) {
-    printf("\n%-15s %-5s %-10s %-10s %-10s %-10s\n", "Port", "Code", "Deck", "Air", "Cabin", "Car");
-    for (int i = 0; i < size; i++) {
-        printf("%-15s %-5s %-10d %-10d %-10d %-10d\n", 
-               routes[i].name, routes[i].code, routes[i].deck, 
-               routes[i].air, routes[i].cabin, routes[i].car);
-    }
-}
-
-
-// do {
-//     printf("Dwse hlikia: ");
-//     scanf("%d", &User[i].age);
-//     if (User[i].age < 18) {
-//         printf("Prepei na eisai toulaxiston 18 xronwn\n");
-//     }
-// } while (User[i].age < 18);
-
-// do {
-//     printf("Dwste password: ");
-//     scanf("%s", int plx);
-
-//     int length = 0;
-//     while (plx[length] != '\0') {
-//         length++;
-//     }
-
-//     if (length != 7) {
-//         printf("Dwse ksana ton kwdiko\n", length);
-//     }
-// } while (length != 7);
-
-// for (int i = 0; i <= 7; i++) {
-//     User[user_count].password[i] = plx[i];
-// }
-
-

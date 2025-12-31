@@ -1,84 +1,289 @@
 #include <stdio.h>
+#include <string.h>
 #include "client_lib.h"
 
-void create_new_clients(User *users, int *user_count) {
-    int num_to_add;
-    int xwros = 30 - *user_count;
+// DATE COMPARISON
 
-    if (xwros == 0) {
-        printf("\nDen yparxei xwros\n");
+Date make_date(char *str){
+    Date d;
+
+    d.dd = (str[0] - '0') * 10 + (str[1] - '0');
+    d.mm = (str[3] - '0') * 10 + (str[4] - '0');
+    d.yyyy = (str[6] - '0') * 1000 +(str[7] - '0') * 100 +(str[8] - '0') * 10 +(str[9] - '0');
+
+    return d;
+}
+
+int compare_trips(char *d1, char *d2){
+    Date a = make_date(d1);
+    Date b = make_date(d2);
+    int result = 0;
+
+    if (a.yyyy < b.yyyy){
+        result = -1;
+    }
+    else if (a.yyyy > b.yyyy){
+        result = 1;
+    }
+    else {
+        if (a.mm < b.mm){
+            result = -1;
+        }
+        else if (a.mm > b.mm){
+            result = 1;
+        }
+        else {
+            if (a.dd < b.dd){
+                result = -1;
+            }
+            else if (a.dd > b.dd){
+                result = 1;
+            }
+        }
+    }
+
+    return result;
+}
+
+// USERS
+
+int username_exists(User users[], int count, char *uname){
+    for (int i = 0; i < count; i++){
+        if (strcmp(users[i].username, uname) == 0){
+            return 1;
+            return 0;
+        }
+    }
+}
+
+void Create_new_client(User users[], int *count){
+    User u;
+
+    if (*count >= 30){
+        printf("Den yparxei xwros\n");
         return;
     }
 
-    printf("\nPosous xrhstes thelete na eisagete; ");
-    scanf("%d", &num_to_add);
+    do{
+        printf("Hlikia (>=18): ");
+        scanf("%d", &u.age);
+    }while (u.age < 18);
 
-    if (num_to_add > xwros) num_to_add = xwros;
+    do{
+        printf("Arithmos kartas (16 psifia): ");
+        scanf("%s", u.card_number);
+    }while (strlen(u.card_number) != 16);
 
-    for (int i = 0; i < num_to_add; i++) {
-        printf("\n--- Eggrafh Xrhsth %d ---\n", *user_count + 1);
+    do{
+        printf("Foithths (0/1): ");
+        scanf("%d", &u.university_student);
+    }while (u.university_student != 0 && u.university_student != 1);
+
+    do{
         printf("Username: ");
-        scanf("%s", users[*user_count].username);
-        printf("Password: ");
-        scanf("%s", users[*user_count].password);
-        printf("Hlikia: ");
-        scanf("%d", &users[*user_count].age);
-        
-        // SOS: Πρέπει να αποθηκεύσουμε αν είναι φοιτητής
-        printf("Eisai foititis; (1=NAI, 0=OXI): ");
-        scanf("%d", &users[*user_count].university_student);
-        
-        (*user_count)++;
+        scanf("%s", u.username);
+    }while (username_exists(users, *count, u.username));
+
+    do{
+        printf("Password (7 xarakthres): ");
+        scanf("%s", u.password);
+    }while (strlen(u.password) != 7);
+
+    users[*count] = u;
+    (*count)++;
+
+    printf("Eggrafh epityxhs!\n");
+}
+
+// LOGIN 
+
+int check_login(User users[], int count, char *username, char *password){
+    for (int i = 0; i < count; i++){
+        if (strcmp(users[i].username, username) == 0 && strcmp(users[i].password, password) == 0){
+            return i;
+            return -1;
+        }
     }
 }
 
-void book_trip(int is_student) {
-    int dest_code, seat_type, has_car, is_round_trip;
-    float cost_per_seat = 0, extra_car_cost = 0, first_cost = 0;
-    float return_trip_cost = 0, total_cost = 0;
-    char dep_date[15], ret_date[15];
+// ID 
 
-    printf("\n--- KRATHSH EISITHRIOU ---\n");
-    printf("Hmeromhnia anaxwrhshs (DD/MM/YYYY): ");
-    scanf("%s", dep_date);
+void generate_trip_id(char *date, char *code, char *user, char *id){
+    char clean[15];
+    int k = 0;
 
-    printf("Kwdikos proorismou (1, 2, h 3): ");
-    scanf("%d", &dest_code);
-    while (dest_code < 1 || dest_code > 3) {
-        printf("Lathos! Dose ksana (1-3): ");
-        scanf("%d", &dest_code);
+    for (int i = 0; date[i] != '\0'; i++){
+        if (date[i] != '/'){
+            clean[k++] = date[i];
+            clean[k] = '\0';
+        }
     }
 
-    printf("Typos theshs (1:Katastroma, 2:Aeroporiko, 3:Kampina): ");
-    scanf("%d", &seat_type);
-    if (seat_type == 1) cost_per_seat = 25.0;
-    else if (seat_type == 2) cost_per_seat = 40.0;
-    else if (seat_type == 3) cost_per_seat = 70.0;
-    
-    printf("Metafora aftokinhtou; (1=NAI, 0=OXI): ");
-    scanf("%d", &has_car);
-    if (has_car == 1) extra_car_cost = 45.0;
+    strcpy(id, clean);
+    strcat(id, code);
+    strcat(id, "-");
+    strcat(id, user);
+}
 
-    first_cost = cost_per_seat + extra_car_cost;
+// BOOKING
 
-    printf("Taxidi me epistrofh; (1=NAI, 0=OXI): ");
-    scanf("%d", &is_round_trip);
+void book_trip(User u, Route routes[], int rcount,BookedTrip trips[], int *tcount){
+    if (*tcount >= 50){
+        printf("Megistos arithmos taxidiwn\n");
+        return;
+    }
 
-    if (is_round_trip == 1) {
+    int seat, car, back;
+    int index = -1;
+    float base, total;
+    char dep[15], ret[15] = "-", code[10];
+
+    printf("Hmeromhnia anaxwrhshs: ");
+    scanf("%s", dep);
+
+    while (index == -1){
+        printf("Kwdikos limaniou: ");
+        scanf("%s", code);
+
+        for (int i = 0; i < rcount; i++){
+            if (strcmp(routes[i].code, code) == 0){
+                index = i;
+                if (index == -1){
+                    printf("Lathos kwdikos\n");
+                }
+            }
+        }
+    }
+
+    printf("Thesh (1-Deck 2-Air 3-Cabin): ");
+    scanf("%d", &seat);
+
+    if (seat == 1){
+        base = routes[index].deck;
+    }
+    else if (seat == 2){
+        base = routes[index].air;
+    }
+    else{
+        base = routes[index].cabin;
+    }
+
+    total = base;
+
+    printf("Aftokinhto (0/1): ");
+    scanf("%d", &car);
+    if (car){
+        total = total + routes[index].car;
+    }
+
+    printf("Epistrofh (0/1): ");
+    scanf("%d", &back);
+    if (back){
         printf("Hmeromhnia epistrofhs: ");
-        scanf("%s", ret_date);
-        return_trip_cost = 0.75 * first_cost;
+        scanf("%s", ret);
+        total = total + base * 0.75;
     }
 
-    total_cost = first_cost + return_trip_cost;
-
-    if (is_student == 1) {
-        total_cost = total_cost / 2.0;
-        printf("[Foititiki ekptosi 50%% efarmostike]\n");
+    if (u.university_student){
+        total = total / 2;
     }
 
-    printf("\n--- APOTELESMA KRATHSHS ---");
-    printf("\nKostos metavashs: %.2f", first_cost);
-    if (is_round_trip == 1) printf("\nKostos epistrofhs: %.2f", return_trip_cost);
-    printf("\nSYNOLIKO KOSTOS: %.2f\n", total_cost);
+    strcpy(trips[*tcount].username, u.username);
+    strcpy(trips[*tcount].dep_date, dep);
+    strcpy(trips[*tcount].ret_date, ret);
+    strcpy(trips[*tcount].status, "Ekkremei");
+    trips[*tcount].trip_type = back;
+    trips[*tcount].total_cost = total;
+
+    generate_trip_id(dep, routes[index].code,u.username, trips[*tcount].booking_id);
+
+    printf("ID: %s | Kostos: %.2f\n",trips[*tcount].booking_id, total);
+
+    (*tcount)++;
 }
+
+// PAYMENT 
+
+void payment(User u, BookedTrip trips[], int total){
+    char id[50];
+    int found = 0;
+
+    for (int i = 0; i < total; i++){
+        if (strcmp(trips[i].username, u.username) == 0 && strcmp(trips[i].status, "Ekkremei") == 0) {
+            printf("%s | %.2f\n",trips[i].booking_id, trips[i].total_cost);
+            found = 1;
+        }
+    }
+    if (!found){
+        printf("Den yparxoun krathseis\n");
+        return;
+    }
+
+    printf("Dwse ID: ");
+    scanf("%s", id);
+
+    for (int i = 0; i < total; i++){
+        if (strcmp(trips[i].booking_id, id) == 0){
+            strcpy(trips[i].status, "Exoflithike");
+        }
+    }
+}
+
+// CONFIRMED 
+
+void confirmed_trips(User u, BookedTrip trips[], int total){
+    BookedTrip temp[50];
+    int count = 0;
+    char order[10];
+
+    for (int i = 0; i < total; i++){
+        if (strcmp(trips[i].username, u.username) == 0 && strcmp(trips[i].status, "Exoflithike") == 0){
+            temp[count++] = trips[i];
+            if (count == 0) {
+                printf("Den yparxoun exoflhmenes\n");
+                return;
+            }
+        }
+    }
+
+    printf("Seira (LOW/HIGH): ");
+    scanf("%s", order);
+
+    for (int i = 0; i < count - 1; i++){
+        for (int j = 0; j < count - 1; j++) {
+            int cmp = compare_trips(temp[j].dep_date,temp[j + 1].dep_date);
+            if ((strcmp(order, "LOW") == 0 && cmp > 0) || (strcmp(order, "HIGH") == 0 && cmp < 0)) {
+                BookedTrip t = temp[j];
+                temp[j] = temp[j + 1];
+                temp[j + 1] = t;
+            }
+        }
+    }
+
+    for (int i = 0; i < count; i++){
+        printf("%s | %.2f\n",temp[i].booking_id, temp[i].total_cost);
+    }
+}
+
+// CLIENT MENU
+
+void client_login(User *u, Route routes[], int rcount, BookedTrip trips[], int *tcount){
+    int choice = 0;
+
+    while (choice != 4) {
+        printf("\n--- MENU (%s) ---\n", u->username);
+        printf("1.Book\n2.Payment\n3.Confirmed\n4.Logout\n");
+        scanf("%d", &choice);
+
+        if (choice == 1){
+            book_trip(*u, routes, rcount, trips, tcount);
+        }
+        else if (choice == 2){
+            payment(*u, trips, *tcount);
+        }
+        else if (choice == 3){
+            confirmed_trips(*u, trips, *tcount);
+        }
+    }
+}
+
