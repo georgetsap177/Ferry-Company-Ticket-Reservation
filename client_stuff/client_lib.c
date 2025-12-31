@@ -127,7 +127,7 @@ void generate_trip_id(char *date, char *code, char *user, char *id){
 
 // BOOKING
 
-void book_trip(User u, Route routes[], int rcount,BookedTrip trips[], int *tcount){
+void book_trip(User u, Route routes[], int rcount, BookedTrip trips[], int *tcount){
     if (*tcount >= 50){
         printf("Megistos arithmos taxidiwn\n");
         return;
