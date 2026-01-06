@@ -3,22 +3,23 @@
 
 #include "../main_lib.h"
 
-// users
-void Create_new_client(User users[], int *count);
+// USERS
 int check_login(User users[], int count, char *username, char *password);
-int username_exists(User users[], int count, char *uname);
 
-// client_menu
+// CLIENT MENU
 void client_login(User *u, Route routes[], int rcount, BookedTrip trips[], int *tcount);
+void view_routes(Route routes[], int rcount);
 
-// booking
+// BOOKING
 void book_trip(User u, Route routes[], int rcount, BookedTrip trips[], int *tcount);
-
+int is_valid_date_format(char *str);
+int is_return_after_departure(char *dep, char *ret);
 void payment(User u, BookedTrip trips[], int total);
 void confirmed_trips(User u, BookedTrip trips[], int total);
 
-// helpers
+// HELPERS
 void generate_trip_id(char *date, char *code, char *user, char *id);
+Date make_date(char *str);
 int compare_trips(char *d1, char *d2);
 
 #endif

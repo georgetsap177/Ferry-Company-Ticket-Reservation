@@ -11,9 +11,9 @@ typedef struct {
 } Route;
 
 typedef struct {
-    int dd;
-    int mm;
-    int yyyy;
+    int dd;   // μέρα
+    int mm;   // μήνας
+    int yyyy; // έτος
 } Date;
 
 typedef struct {
@@ -29,9 +29,9 @@ typedef struct {
     char username[30];
     char dep_date[15];
     char ret_date[15];
-    int trip_type;
+    int trip_type;      // 1=Deck,2=Air,3=Cabin
     float total_cost;
-    char status[15];
+    char status[15];    // "Ekkremei" ή "Exoflithike"
 } BookedTrip;
 
 #endif
