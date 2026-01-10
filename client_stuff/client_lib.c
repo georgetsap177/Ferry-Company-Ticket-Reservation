@@ -54,20 +54,14 @@ int check_login(User users[], int count, char *username, char *password){
 void view_routes(Route routes[], int rcount){
     int i;
 
-    printf("\n-----------------------------------------------\n");
+    printf("\n---------------------------------------------------------------------------\n");
     printf("Νησί/Λιμάνι     Κωδικός  Κατάστρωμα  Αεροπορικού τύπου  Καμπίνα  Αυτοκίνητο\n");
-    printf("-----------------------------------------------\n");
+    printf("---------------------------------------------------------------------------\n");
 
     for(i = 0; i < rcount; i++){
-        printf("%-15s %-7s %-9d %-7d %-8d %-7d\n",
-               routes[i].name,
-               routes[i].code,
-               routes[i].deck,
-               routes[i].air,
-               routes[i].cabin,
-               routes[i].car);
+        printf("%-15s %-7s %-9d %-7d %-8d %-7d\n",routes[i].name, routes[i].code, routes[i].deck, routes[i].air, routes[i].cabin, routes[i].car);
     }
-    printf("-----------------------------------------------\n");
+    printf("---------------------------------------------------------------------------\n");
 }
 
 // ID GENERATION 
@@ -90,11 +84,19 @@ void generate_trip_id(char *date, char *code, char *user, char *id){
 
 // BOOKING
 int is_valid_date_format(char *str){
-    if(strlen(str) != 10) return 0;
-    if(str[2] != '/' || str[5] != '/') return 0;
+    if(strlen(str) != 10){
+        return 0;
+    }
+    if(str[2] != '/' || str[5] != '/'){
+        return 0;
+    }
     for(int i = 0; i < 10; i++){
-        if(i == 2 || i == 5) continue;
-        if(str[i] < '0' || str[i] > '9') return 0;
+        if(i == 2 || i == 5){
+            continue;
+        }
+        if(str[i] < '0' || str[i] > '9'){
+            return 0;
+        }
     }
     return 1;
 }
@@ -104,9 +106,15 @@ int is_return_after_departure(char *dep, char *ret){
     Date d1 = make_date(dep);
     Date d2 = make_date(ret);
 
-    if(d2.yyyy < d1.yyyy) return 0;
-    if(d2.yyyy == d1.yyyy && d2.mm < d1.mm) return 0;
-    if(d2.yyyy == d1.yyyy && d2.mm == d1.mm && d2.dd <= d1.dd) return 0;
+    if(d2.yyyy < d1.yyyy){
+        return 0;
+    }
+    if(d2.yyyy == d1.yyyy && d2.mm < d1.mm){
+        return 0;
+    }
+    if(d2.yyyy == d1.yyyy && d2.mm == d1.mm && d2.dd <= d1.dd){
+        return 0;
+    }
 
     return 1;
 }
@@ -179,7 +187,9 @@ void book_trip(User u, Route routes[], int rcount, BookedTrip trips[], int *tcou
     // Επιλογή αν ο επιβάτης έχει αυτοκίνητο
     printf("Aftokinhto (0/1): ");
     scanf("%d", &car);
-    if(car) total += routes[index].car;
+    if(car){
+        total = total + routes[index].car;
+    }
 
     // Επιλογή αν ο επιβάτης κάνει ταξίδι με επιστροφή
     printf("Epistrofh (0/1): ");
@@ -211,7 +221,7 @@ void book_trip(User u, Route routes[], int rcount, BookedTrip trips[], int *tcou
 
     // Έλεγχος αν είναι φοιτητικό για να γίνει έκτπωση
     if(u.university_student == 1){
-        total /= 2;
+        total = total / 2;
     }
 
     // Αποθήκευση κράτησης 
@@ -292,7 +302,8 @@ void confirmed_trips(User u, BookedTrip trips[], int total){
         scanf("%s", order);
         if(strcmp(order, "LOW") == 0 || strcmp(order, "HIGH") == 0){
             valid = 1;
-        } else {
+        } 
+        else {
             attempts++;
             printf("Λάθος εισαγωγή (%d/3)\n", attempts);
             if(attempts >= 3){

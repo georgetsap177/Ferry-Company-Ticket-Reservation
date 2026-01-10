@@ -62,9 +62,10 @@ int main() {
                         printf("3. Logout\n");
                         printf("Choice: ");
                         if(scanf("%d", &admin_choice) != 1){
-                            while(getchar() != '\n');
-                            printf("Λάθος εισαγωγή\n");
-                            admin_choice = 0;
+                            while(getchar() != '\n'){
+                                printf("Λάθος εισαγωγή\n");
+                                admin_choice = 0;
+                            }
                         }
 
                         if(admin_choice == 1){
@@ -79,7 +80,8 @@ int main() {
                             // Άμεσος έλεγχος ύπαρξης username
                             if(!username_exists(users, users_count, target)){
                                 printf("Το username '%s' δεν υπάρχει.\n", target);
-                            } else {
+                            } 
+                            else {
                                 int valid_pass = 0;
                                 while(valid_pass == 0){
                                     printf("New password (7 chars): ");
@@ -87,7 +89,8 @@ int main() {
                                     if(strlen(newpass) == 7){
                                         change_client_password(users, users_count, target, newpass);
                                         valid_pass = 1;
-                                    } else {
+                                    } 
+                                    else {
                                         printf("Λάθος μήκος κωδικού\n");
                                     }
                                 }

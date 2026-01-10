@@ -33,7 +33,8 @@ void create_new_client(User users[], int *count){
         scanf("%d", &u.age);
         if(u.age >= 18){
             valid = 1;
-        } else {
+        } 
+        else {
             printf("Η ηλικία πρέπει να είναι >= 18\n");
         }
     }
@@ -75,7 +76,8 @@ void create_new_client(User users[], int *count){
         scanf("%s", u.username);
         if(username_exists(users, *count, u.username)){
             printf("Το username υπάρχει ήδη\n");
-        } else {
+        } 
+        else {
             valid = 1;
         }
     }
@@ -88,7 +90,8 @@ void create_new_client(User users[], int *count){
         scanf("%s", u.password);
         if(strlen(u.password) == 7){
             valid = 1;
-        } else {
+        } 
+        else {
             printf("Το password πρέπει να έχει 7 χαρακτήρες\n");
         }
     }
@@ -133,7 +136,8 @@ void change_client_password(User users[], int count, char *username, char *new_p
             strcpy(users[user_index].password, newpass);
             printf("Ο κωδικός άλλαξε επιτυχώς!\n");
             return;
-        } else {
+        } 
+        else {
             attempts++;
             printf("Λάθος μήκος κωδικού (%d/3)\n", attempts);
         }
