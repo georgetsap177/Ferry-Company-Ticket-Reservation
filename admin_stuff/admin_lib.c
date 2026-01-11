@@ -102,46 +102,32 @@ void create_new_client(User users[], int *count){
 }
 
 // Αλλαγή κωδικού για admin 
-void change_client_password(User users[], int count, char *username, char *new_password){
-    if(count == 0){
+void change_client_password(User users[], int count, char *username, char *new_password) {
+    if (count == 0) {
         printf("Δεν υπάρχουν καταχωρημένοι χρήστες.\n");
         return;
     }
 
-    char uname[30];
-    printf("Username to change: ");
-    scanf("%29s", uname);
-
-    // Άμεσος έλεγχος αν υπάρχει ο χρήστης
     int user_index = -1;
-    for(int i=0; i<count; i++){
-        if(strcmp(users[i].username, uname) == 0){
+    for (int i = 0; i < count; i++) {
+        if (strcmp(users[i].username, username) == 0) {
             user_index = i;
             break;
         }
     }
 
-    if(user_index == -1){
-        printf("Σφάλμα: το username '%s' δεν υπάρχει.\n", uname);
-        return;  // επιστροφή αμέσως
+    if (user_index == -1) {
+        printf("Σφάλμα: το username '%s' δεν υπάρχει.\n", username);
+        return;
     }
 
-    // Ζητάμε νέο password μόνο αν ο χρήστης υπάρχει
-    char newpass[30];
-    int attempts = 0;
-    while(attempts < 3){
-        printf("New password (7 chars): ");
-        scanf("%29s", newpass);
-        if(strlen(newpass) == 7){
-            strcpy(users[user_index].password, newpass);
-            printf("Ο κωδικός άλλαξε επιτυχώς!\n");
-            return;
-        } 
-        else {
-            attempts++;
-            printf("Λάθος μήκος κωδικού (%d/3)\n", attempts);
-        }
+    // Εφόσον η main έχει ήδη διαβάσει το password στη μεταβλητή new_password,
+    // ελέγχουμε αν το μήκος του είναι σωστό (7 χαρακτήρες).
+    if (strlen(new_password) == 7) {
+        strcpy(users[user_index].password, new_password);
+        printf("Ο κωδικός για τον χρήστη %s άλλαξε επιτυχώς!\n", username);
+    } 
+    else {
+        printf("Σφάλμα: Το password πρέπει να έχει ακριβώς 7 χαρακτήρες.\n");
     }
-
-    printf("Αποτυχία αλλαγής κωδικού. Επιστροφή στο menu.\n");
 }
